@@ -1,0 +1,31 @@
+<div class="p-3 mb-4 bg-light rounded-3 jumbotron" style="background-image: url(./assets/images/lesesaal.jpg)">
+  <div class="container-fluid py-5">
+    <h1 class="display-4">Brandenburgisches Landeshauptarchiv</h1>
+    <p class="lead">Provenienzforschung</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4" *ngIf="!currentUser">
+      <h2>Abruf von Unterlagen</h2>
+      <p class="min-height">Rufen Sie Unterlagen mit Ihrem Codes ab.</p>
+      <p><a class="btn btn-primary" routerLink="/reservierung" role="button">Abruf »</a></p>
+    </div>
+    <div class="col-md-4" *ngIf="hasRight('RIGHT_DIGITALISATE_VIEW')">
+      <h2>Akten durchsuchen</h2>
+      <p class="min-height">Hier geht es zur Suche der Akten</p>
+      <p><a class="btn btn-primary" routerLink="/digitalisate" role="button">Akten »</a></p>
+    </div>
+    <div class="col-md-4" *ngIf="hasRight('RIGHT_VORGANG')">
+      <h2>Vorgänge verwalten</h2>
+      <p class="min-height">Hier geht es zur Liste der Vorgänge</p>
+      <p><a class="btn btn-primary" routerLink="/vorgaenge" role="button">Vorgänge »</a></p>
+    </div>
+    <div class="col-md-4" *ngIf="hasRight('RIGHT_APP_SETTINGS')">
+      <h2>Administration</h2>
+      <p class="min-height">Hier geht es zum Administrationsbereich</p>
+      <p><a class="btn btn-primary" routerLink="/admin" role="button">Administration »</a></p>
+    </div>
+  </div>
+</div>

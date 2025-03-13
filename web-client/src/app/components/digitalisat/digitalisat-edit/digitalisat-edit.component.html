@@ -1,0 +1,151 @@
+<div class="container-fluid" style="height: 100%; position: absolute">
+  <div class="digitalisat-header row align-items-center">
+    <div class="col-auto me-auto">
+      <h5>Treffer für {{category?.name}} in: {{digitalisat?.signature}}</h5>
+    </div>
+    <div class="col-auto btn-group" dropdown>
+      <button type="button" class="btn btn-primary">{{this.category?.name}}</button>
+      <button id="button-split" type="button" dropdownToggle class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+              aria-controls="dropdown-split">
+        <span class="caret"></span>
+        <span class="sr-only visually-hidden">Split button!</span>
+      </button>
+      <ul id="dropdown-split" *dropdownMenu class="dropdown-menu"
+          role="menu" aria-labelledby="button-split">
+        <li role="menuitem" *ngFor="let sc of this.categories$ | async">
+          <a *ngIf="this.category?.name !== sc.name && sc.name !== 'Unclassified'"
+             class="dropdown-item {{this.hasCategory(sc)}}"
+             routerLink="/digitalisate/editDigitalisat/{{this.digitalisat?.id}}/{{sc.id}}"
+             [queryParams]="{text_search: this.textSearch}">{{sc.name}}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-white btn-rounded" (click)="onCreateVorgangClick()" [disabled]="!this.category?.id || this.isSavingVorgang">
+        <span *ngIf="!this.isSavingVorgang" style="color: #404040">
+          <span *ngIf="!this.isCreatingVorgang">Vorgang anlegen</span>
+          <span *ngIf="this.isCreatingVorgang">Vorgang abbrechen</span>
+        </span>
+        <span *ngIf="this.isSavingVorgang" class="fa fa-spinner fa-spin" style="font-size:20px; color: #404040"></span>
+      </button>
+    </div>
+  </div>
+  <div class="row" style="height: 100%">
+    <div class="wrap-images" #wrapImages (scroll)="onScroll($event)">
+      <div *ngIf="!this.isCreatingVorgang" class="sticky">
+        <div *ngIf="!singleImageView" class="digitalisat-tools row me-1">
+          <div class="btn col-auto ms-lg-2">
+            <select class="form-select"
+                    [disabled]="!(this.category && hasRight('RIGHT_DIGITALISATE_UPDATE'))"
+                    [ngModel]="getClassificationStatus(this.digitalisat)?.status" (ngModelChange)="onChangeWorkingStatus($event)">
+              <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('OPEN')">{{enumClassificationStatus.OPEN}}</option>
+              <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('WORKING')">{{enumClassificationStatus.WORKING}}</option>
+              <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('CLOSED')">{{enumClassificationStatus.CLOSED}}</option>
+            </select>
+          </div>
+          <div class="btn-group col-auto align-self-center">
+            <ui-switch class="me-3" checkedLabel="Besitz" uncheckedLabel="kein Besitz" color="#007BFF"
+                       checkedTextColor="#FFFFFF" (valueChange)="onOwnerSwitchValueChange($event)"
+                       [checked]="getClassificationStatus(this.digitalisat)?.hasOwnership === true"
+                       [disabled]="this.disableCategoryFunctions || !hasRight('RIGHT_DIGITALISATE_UPDATE')"></ui-switch>
+            <ui-switch checkedLabel="Standort" uncheckedLabel="Kein Standort" color="#007BFF"
+                       checkedTextColor="#FFFFFF" (valueChange)="onLocationSwitchValueChange($event)"
+                       [checked]="getClassificationStatus(this.digitalisat)?.hasLocation === true"
+                       [disabled]="this.disableCategoryFunctions || !hasRight('RIGHT_DIGITALISATE_UPDATE')"></ui-switch>
+          </div>
+          <div class="btn col-md-6">
+            <div class="input-group"> <h6 class="align-self-center me-3" title="zeige auch unklassifizierte Seiten">Alle Seiten: </h6>
+              <ui-switch class="me-lg-3 align-self-center" checkedLabel="An" uncheckedLabel="Aus" color="#007BFF"
+                         checkedTextColor="#FFFFFF" title="Filterkategorie" (valueChange)="this.showAllImages=!this.showAllImages; this.searchImages()"
+                         [checked]="this.showAllImages " [disabled]="this.disableCategoryFunctions"></ui-switch>
+              <input type="text" class="form-control" style="min-width: 200px" [(ngModel)]="this.textSearch" placeholder="Textsuche"
+                     (keydown.enter)="searchImages()">
+              <div class="input-group-append">
+                <button class="btn btn-square btn-outline-secondary" type="button" (click)="searchImages()" [disabled]="this.fetchingImages">
+                  <span class="fa fa-search"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="btn col-auto ms-auto">
+            <button class="btn btn-sm btn-block" (click)="openModal(removeAllImageCategoryTemplate)"
+                    [disabled]="this.disableCategoryFunctions || !this.hasImagesInCategory()"
+                    title="Alle Seiten deklassifizieren ">
+              <span class="fa fa-trash icon-big" style="vertical-align: middle"></span>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!singleImageView && isLocked()" class="m-2">
+          <alert type="info"><b>Locked</b> for <b>{{category?.name}}</b>. Please, <b>unlock</b> if you wish to
+            add images or re-classify it for <b>{{category?.name}}</b>.
+            <button class="btn btn-default ms-auto" *ngIf="hasRight('RIGHT_DIGITALISATE_UPDATE')" title="Unlock"
+                    (click)="unlockClassificationFromDigitalisat()">
+              <span class="fa fa-unlock-alt"></span>
+            </button>
+          </alert>
+        </div>
+      </div>
+      <div *ngIf="this.isCreatingVorgang">
+        <div *ngIf="!singleImageView" class="digitalisat-tools row justify-content-center me-4">
+          <div class="btn col-auto ms-lg-2">
+            <button class="btn btn-info me-2" (click)="this.saveVorgang()" [disabled]="this.isSavingVorgang">Vorgang speichern</button>
+            <button class="btn btn-secondary"  (click)="onCreateVorgangClick()" [disabled]="this.isSavingVorgang">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+      <app-gallery-image-viewer [digitalisatImages]="this.digitalisatImages" [(singleImageView)]="this.singleImageView"
+                                [category]="this.category"
+                                [selectable]="this.isCreatingVorgang"
+                                [disableCategoryFunctions] = "this.disableCategoryFunctions"
+                                [textSearch]="this.textSearch"
+                                [selectedImages]="this.digitalisatSelectedImages"
+                                (selectedImagesChange)="selectedImagesChange($event)"
+                                (singleImageViewChange)="onChangeImageView($event)"
+                                (addImageToCategory)="this.openImageCategoryModal(imageCategoryTemplate, $event, true)"
+                                (removeImageFromCategory)="this.openImageCategoryModal(imageCategoryTemplate, $event, false)" >
+
+      </app-gallery-image-viewer>
+    </div>
+    <div class="col-sm-auto p-0" style="height: 100%; overflow-y: hidden;">
+      <app-splitter [parent]="wrapImages"></app-splitter>
+    </div>
+    <div class="col-lg p-0 me-0" style="height: 100%; overflow: hidden;">
+      <app-metadata-comments-view [digitalisat]="this.digitalisat" [reference]="this.category?.name"></app-metadata-comments-view>
+    </div>
+  </div>
+</div>
+
+<ng-template #imageCategoryTemplate let-c="close" let-d="dismiss" class="modal fade modal-dialog modal-lg" tabindex="-1"
+             role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-header">
+    <h4 class="modal-title">Klassifizierung bearbeiten</h4>
+  </div>
+  <div class="modal-body" style="word-wrap: break-word;">
+    <div *ngIf="shouldAddImageToCategory"> Bild <b>{{this.selectedImageCategory?.name}}</b> zu
+      <b>{{this.category?.name}}</b> hinzufügen</div>
+    <div *ngIf="!shouldAddImageToCategory"> Bild <b>{{this.selectedImageCategory?.name}}</b> aus
+      <b>{{this.category?.name}}</b> entfernen</div>
+  </div>
+  <div class="modal-footer">
+    <button *ngIf="shouldAddImageToCategory" type="button" class="btn btn-outline-dark"
+            (click)="this.addImageToCategory(this.selectedImageCategory)">Hinzufügen</button>
+    <button *ngIf="!shouldAddImageToCategory" type="button" class="btn btn-outline-dark"
+            (click)="this.removeImageFromCategory(this.selectedImageCategory)">Entfernen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="this.closeImageCategoryModal()">Abbrechen</button>
+  </div>
+</ng-template>
+
+<ng-template #removeAllImageCategoryTemplate let-c="close" let-d="dismiss" class="modal fade modal-dialog modal-lg" tabindex="-1"
+             role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-header">
+    <h4 class="modal-title">Klassifizierung bearbeiten</h4>
+  </div>
+  <div class="modal-body" style="word-wrap: break-word;">
+    <div>Möchten Sie wirklich alle Bilder aus dieser Klassifizierung entfernen?</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark"
+            (click)="this.removeDigitalisateFilesFromClassification()">Entfernen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="this.closeModal()">Abbrechen</button>
+  </div>
+</ng-template>

@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <div *ngIf="this.digitalisatInfo$ | async as data"  class="relative">
+    <canvas baseChart height="50"
+            [data]="data"
+            [type]="doughnutType"
+            [options]="doughnutOptions"
+            [legend]="true">
+    </canvas>
+    <div class="absolute-center text-center mt-3">
+      <p>Total {{total | number:'1.0-0'}}</p>
+    </div>
+  </div>
+</div>

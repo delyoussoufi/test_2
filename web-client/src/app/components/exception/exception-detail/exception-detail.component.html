@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Fehler {{exceptionLog.title}}</h3>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      <label>Hash</label>
+      {{exceptionLog.hash}}
+    </div>
+    <div class="col-sm">
+      <label>Datum</label>
+      {{exceptionLog.date | date : "dd.MM.yyyy"}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      <label>Stacktrace</label>
+      <p>
+        {{exceptionLog.stacktrace}}
+    </div>
+  </div>
+</div>

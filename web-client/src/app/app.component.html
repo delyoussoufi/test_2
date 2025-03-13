@@ -1,0 +1,47 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<div class="container-fluid p-0">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light p-2">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link waves-light" routerLink="/home" routerLinkActive="active">Provenance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="hasRight('RIGHT_DIGITALISATE_VIEW')" routerLink="/digitalisate" routerLinkActive="active">Akten durchsuchen</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="hasRight('RIGHT_VORGANG')" routerLink="/vorgaenge" routerLinkActive="active">Vorgänge verwalten</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/searchCategories" routerLinkActive="active">Suchkategorien</a>
+        </li>
+        <li *ngIf="hasAdminRights()" class="nav-item">
+          <a *ngIf="hasRole('ROLE_ADMIN')" class="nav-link" routerLink="/admin/users" routerLinkActive="active">Administration</a>
+          <a *ngIf="!hasRole('ROLE_ADMIN')" class="nav-link" routerLink="/admin" routerLinkActive="active">Administration</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="hasRight('RIGHT_RECLASSIFY')" routerLink="/reclassify/view" routerLinkActive="active">Neu Klassifizieren</a>
+        </li>
+      </ul>
+      <ul class="nav nav-pills ms-auto" *ngIf="!currentUser">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active">Anmelden</a>
+        </li>
+      </ul>
+      <div class="btn-group d-inline-block ms-auto" dropdown *ngIf="currentUser">
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                aria-controls="dropdown-basic">
+          {{currentUser.username}} <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><a class="dropdown-item" routerLink="/profile">Profil</a></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="logout()">Abmelden</button></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+<alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</alert>
+<alert *ngIf="errorMessage" type="danger" (close)="errorMessage = null">{{ errorMessage }}</alert>
+<router-outlet></router-outlet>

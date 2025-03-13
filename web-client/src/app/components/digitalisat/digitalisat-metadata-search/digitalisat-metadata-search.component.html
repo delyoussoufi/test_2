@@ -1,0 +1,38 @@
+<ng-container>
+  <div class="row m-auto needs-validation">
+    <div class="form-group col-lg-6">
+      <label>Metadatensuche:</label>
+      <span *ngFor="let meta of this.metaFilter | keyvalue">
+        <span *ngIf="meta.value" class="badge bg-info ms-1 mb-2 btn" (click)="removeFilter(meta.key)" title="remove">
+          {{ this.getAliasFilterName(meta.key) }} {{meta.value}}
+        </span>
+      </span>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <select class="form-select btn btn-square btn-select" id="meta-filter"
+                  [(ngModel)]="this.selectedFilter" (ngModelChange)="onFilterChange($event)">
+            <option disabled selected [value]="this.filterPlaceholder">{{this.filterPlaceholder.aliasName}}</option>
+            <option [ngValue]="filter" *ngFor="let filter of this.filtersAliasDisplay">{{filter.aliasName}}</option>
+          </select>
+        </div>
+        <input  [type]="this.selectedFilter.valueType" class="form-control" [(ngModel)]="this.value" (keydown.enter)="this.onSearch()"
+               placeholder=""
+               [disabled]="this.selectedFilter === this.filterPlaceholder" min="1" aria-describedby="helpBlock"/>
+        <div class="input-group-append">
+          <button class="btn btn-square btn-outline-secondary" type="button" title="add"
+                  (click)="addFilter(this.selectedFilter.mapName, this.value)" [disabled]="this.selectedFilter === this.filterPlaceholder">
+            <span class="fa fa-plus"></span>
+          </button>
+          <button class="btn btn-square btn-outline-secondary" type="button"
+                  (click)="this.onSearch()" title="suchen">
+            <span class="fa fa-search"></span>
+          </button>
+          <button class="btn btn-square btn-outline-danger" type="button" title="clean filters" (click)="cleanFilters()">
+            <span class="fa fa-trash"></span>
+          </button>
+        </div>
+        <small id="helpBlock" class="input-group form-text text-muted" [innerHTML]=this.selectedFilter.helpText></small>
+      </div>
+    </div>
+  </div>
+</ng-container>

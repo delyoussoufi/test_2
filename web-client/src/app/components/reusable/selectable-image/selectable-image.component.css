@@ -1,0 +1,52 @@
+div.img-container {
+  position: relative;
+  align-content: center;
+  margin: 8px;
+  border: 1px solid #777;
+  float: left;
+  height: 325px;
+  width: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+div.img-container:hover {
+  border: 1px solid #111;
+}
+
+div.img-title {
+  text-align: center;
+  position: relative;
+  color: white;
+  background-color: #607D8B;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  height:25px
+}
+
+div.img-title.true {
+  color: #111111;
+  background-color: lightskyblue;
+}
+
+div.img-body {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+}
+
+div.img-note {
+  position: relative;
+  width: 100%; height: 100px;
+  background-color: #F7F7F7
+}
+
+div.text {
+  height: 100%;
+  padding: 10px;
+  font-size: smaller;
+  text-align: center;
+  word-wrap:break-word;
+  background-color:  #f8f9fa;
+}

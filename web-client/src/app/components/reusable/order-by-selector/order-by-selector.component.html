@@ -1,0 +1,7 @@
+<ng-container>
+  <div (click)="this.sort.emit()" [title]="this.title">
+    <span *ngIf="this.isDesc" class="fa fa-sort-up icon-medium order-selected {{this.isActive}}"></span>
+    <span *ngIf="!this.isDesc" class="fa fa-sort-down icon-medium order-selected {{this.isActive}}"></span>
+  </div>
+</ng-container>
+

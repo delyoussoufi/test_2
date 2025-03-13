@@ -1,0 +1,6 @@
+from flaskapp.search.vorgang_search import VorgangSearch
+from flaskapp.search.digi_bestand_search import DigiBestandSearch
+from flaskapp.search.exception_search import ExceptionSearch
+from flaskapp.search.user_search import UserSearch
+from flaskapp.search.search_bestand_search import SearchBestandSearch
+from flaskapp.search.search_category_search import SearchCategorySearch

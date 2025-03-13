@@ -1,0 +1,273 @@
+<div class="container-fluid">
+  <div class="row m-auto">
+    <div class="form-group col-sm-2">
+      <label for="searchCategory">Suchkategorien:</label>
+      <select class="form-select" id="searchCategory" [disabled]="this.isLoading"
+              [(ngModel)]="selectedSearchCategory" (ngModelChange)="onChangeSearchCategory($event)">
+        <option [ngValue]="null">-</option>
+        <option [ngValue]="searchCategory" *ngFor="let searchCategory of this.searchCategories$ | async">
+          {{searchCategory.name}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group col-sm-2">
+      <label for="searchCategory">Bearbeitungstatus:</label>
+      <select class="form-select" id="bearbeitungstatusSearch"
+              [(ngModel)]="selectedWorkingStatus" (ngModelChange)="onChangeWorkingStatus($event)" [disabled]="!this.selectedSearchCategory || this.isLoading">
+        <option [ngValue]="null">-</option>
+        <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('OPEN')">{{enumClassificationStatus.OPEN}}</option>
+        <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('WORKING')">{{enumClassificationStatus.WORKING}}</option>
+        <option [ngValue]="classificationStatusKeyBind.getWorkingStatusKey('CLOSED')">{{enumClassificationStatus.CLOSED}}</option>
+      </select>
+    </div>
+    <div class="form-group col-sm-2">
+      <label>Textsuche:
+        <span title="help"  style=" max-width: 100%;"
+                [popover]="popTextSearchHelper"
+                [adaptivePosition]="true"
+                placement="right"
+                container="body"
+                popoverTitle="Suchmöglichkeiten:">
+          <span class="fa fa-question-circle-o"></span>
+        </span>
+      </label>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" [(ngModel)]="this.searchParams.textSearch" (keydown.enter)="search()"
+               [disabled]="this.isLoading">
+        <div class="input-group-append">
+          <button class="btn btn-square btn-outline-secondary" type="button" (click)="search()" [disabled]="this.isLoading">
+            <span class="fa fa-search"></span>
+          </button>
+          <button type="button" class="btn btn-square btn-outline-secondary" (click)="this.isCollapsed = !this.isCollapsed"
+                  [attr.aria-expanded]="!isCollapsed" aria-controls="filterCollapse" title="Metadatensuche">
+            <span class="fa fa-navicon"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <label class="mt-lg-5 mb-0" style="font-size: 10pt;">gefunden: {{totalItems}} Akten</label>
+    </div>
+  </div>
+  <div id="filterCollapse" [collapse]="isCollapsed" [isAnimated]="true">
+    <app-digitalisat-metadata-search [(metaFilter)]="this.searchParams.metadata" (search)="search()"></app-digitalisat-metadata-search>
+  </div>
+  <div *ngIf="this.isLoading" style="text-align: center;">
+    <div class="spinner-grow text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-primary ms-1" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-primary ms-1" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="!this.isLoading" >
+    <table class="table table-striped table-hover table-condensed">
+      <thead>
+      <tr>
+        <th>Bearbeitungsstatus</th>
+        <th>Aktensignatur</th>
+        <th>Registratursignatur</th>
+        <th>Name</th>
+        <th>Umfang des Digitalisats</th>
+        <th>Seitentreffer</th>
+        <th>Auswertung Provenienz</th>
+        <th>Gesperrte Klassifizierung</th>
+        <th>
+          <button class="btn btn-sm btn-outline-dark" (click)="this.export_search(exportQueryRef)"
+                  title="Exportieren Sie das Suchergebnis in eine Excel-Datei">Query Export
+            <span class="fa fa-file-excel-o"></span>
+          </button>
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <app-order-by-selector *ngIf="selectedSearchCategory"
+                                 (sort)="sort('status')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'status'"></app-order-by-selector>
+        </th>
+        <th>
+          <app-order-by-selector (sort)="sort('signature')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'signature'"></app-order-by-selector>
+        </th>
+        <th>
+          <app-order-by-selector (sort)="sort('registry_signature')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'registry_signature'"></app-order-by-selector>
+        </th>
+        <th>
+          <app-order-by-selector (sort)="sort('title')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'title'"></app-order-by-selector>
+        </th>
+        <th>
+          <app-order-by-selector (sort)="sort('pageCount')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'pageCount'"></app-order-by-selector>
+        </th>
+        <th>
+          <app-order-by-selector *ngIf="selectedSearchCategory"
+                                 (sort)="sort('matches')" [isDesc]="this.orderDesc"
+                                 [isActive]="this.orderBy === 'matches'"></app-order-by-selector>
+        </th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let digitalisat of this.digitalisate">
+        <td>
+          <span *ngIf="selectedSearchCategory" [class]="getClassificationStatusStyle(digitalisat)" [title]="getClassificationStatusValue(digitalisat)"></span>
+        </td>
+        <td>{{digitalisat.signature}}</td>
+        <td>{{digitalisat.scopeData?.registrySignature}}</td>
+        <td>{{digitalisat.scopeData?.title}}</td>
+        <td>{{digitalisat.expectedImages}}/{{digitalisat.numberOfImages}}</td>
+        <td>{{getClassificationStatus(digitalisat)?.numberOfPagesClassified}}</td>
+        <td>
+          <div *ngIf="selectedSearchCategory">
+            <a> Besitz:
+              <span *ngIf="getClassificationStatus(digitalisat)?.hasOwnership" class="fa fa-circle status-done"></span>
+              <span *ngIf="!getClassificationStatus(digitalisat)?.hasOwnership" class="fa fa-circle status-idle"></span>
+            </a>
+            <a style="margin-left: 2%"> Standort:
+              <span *ngIf="getClassificationStatus(digitalisat)?.hasLocation" class="fa fa-circle status-done"></span>
+              <span *ngIf="!getClassificationStatus(digitalisat)?.hasLocation" class="fa fa-circle status-idle"></span>
+            </a>
+          </div>
+        </td>
+        <td>
+          <button type="button" class="btn btn-xs btn-default tableButton" title="click" placement="left"
+                  [outsideClick]="true"
+                  [popoverContext]="digitalisat"
+                  adaptivePosition="true"
+                  popoverTitle="Akte {{digitalisat.signature}}"
+                  [popover]="popLockedSearchCategories">
+            <span>{{digitalisat.lockedCategories.length}}</span>
+          </button>
+        </td>
+        <td style="white-space: nowrap">
+          <div class="pull-right">
+            <a class="btn btn-lg btn-default tableButton" *ngIf="hasRight('RIGHT_RECLASSIFY')" title="Klassifizierung wiederholen"
+               (click)="openReclassifyModal(reclassifyTemplate, digitalisat)">
+              <span class="fa fa-retweet"></span>
+            </a>
+            <a routerLink="editDigitalisat/{{digitalisat.id}}/{{selectedSearchCategory?.id}}" [queryParams]="{text_search: this.searchParams.textSearch}"
+               class="btn btn-xs btn-default tableButton" title="bearbeiten">
+              <span class="fa fa-pencil"></span>
+            </a>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex">
+    <div class="p-2">
+      <button class="btn btn-info" title="set page" (click)="this.setPage(this.manualPageSelected)"
+              [disabled]="this.isLoading">
+        Aktuelle Seite setzen auf:
+      </button>
+    </div>
+    <div class="me-auto pt-2 pb-2 pl-0">
+      <input class="form-control" type="number" [(ngModel)]="this.manualPageSelected"
+             [max]="this.maxPage" min="1" step="1" [disabled]="this.isLoading">
+    </div>
+    <div class="p-2">
+      <div class="btn-group" dropdown style="padding-right: 10px;">
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                aria-controls="dropdown-basic" [disabled]="this.isLoading">
+          {{itemsPerPage}} <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(10)">10</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(20)">20</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(50)">50</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(100)">100</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="p-2">
+      <pagination [totalItems]="totalItems" [(ngModel)]="page" [disabled]="this.isLoading"
+                  [itemsPerPage]="itemsPerPage"
+                  (pageChanged)="pageChanged($event)" [maxSize]=5
+                  [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                  lastText="&raquo;">
+      </pagination>
+    </div>
+  </div>
+</div>
+
+<ng-template #reclassifyTemplate let-c="close" let-d="dismiss" class="modal fade">
+  <div class="modal-header">
+    <h4 class="modal-title">Klassifizierung wiederholen</h4>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="this.reclassifyDigitalisat?.status === 'CLASSIFYING'"> Bitte warten Sie mal...
+      <span class="fa fa-spinner fa-spin"></span>
+    </div>
+    <div *ngIf="this.reclassifyDigitalisat?.status !== 'CLASSIFYING'">
+      Möchten Sie {{this.reclassifyDigitalisat?.signature}} wirklich neu klassifizieren?
+      <br><br>
+      <select class="form-select" id="reclassifySearchCategory"
+              [(ngModel)]="selectedSearchCategoryReclassify">
+        <option [ngValue]="null">Alle</option>
+        <option [ngValue]="sc" *ngFor="let sc of this.searchCategoriesWithoutDefault$ | async">
+          <div *ngIf="sc.name !== 'Unclassified'">{{sc.name}}</div>
+        </option>
+      </select>
+      <br>
+      <div *ngIf="!selectedSearchCategoryReclassify">Alle bestehenden Klassifikationen werden aus diesem Digitalisat
+        entfernt und eine Neuklassifizierung versucht.</div>
+      <div *ngIf="selectedSearchCategoryReclassify">Die {{selectedSearchCategoryReclassify?.name}}-Klassifizierung
+        wird aus diesem Digitalisat entfernt und eine Neuklassifizierung wird versucht.</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" [disabled]="this.reclassifyDigitalisat?.status === 'CLASSIFYING'"
+            (click)="reclassify()">bestätigen</button>
+    <button type="button" class="btn btn-outline-dark" [disabled]="this.reclassifyDigitalisat?.status === 'CLASSIFYING'"
+            (click)="closeReclassifyModal()">Abbrechen</button>
+  </div>
+</ng-template>
+
+
+<ng-template #popLockedSearchCategories let-lockedCategories="lockedCategories" let-digitalisatId="id">
+  <div class="table-responsive">
+    <table class="table table-dark table-bordered" id="infoTable" style="margin-bottom: 0;">
+      <thead>
+      <tr>
+        <th class="center">Locked Categories</th>
+        <th class="center">Unlock</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let category of lockedCategories">
+        <td class="center">{{category.name}}</td>
+        <td class="center">
+          <button class="btn btn-sm btn-default tableButton" *ngIf="hasRight('RIGHT_DIGITALISATE_UPDATE')" title=""
+             (click)="unlockClassificationFromDigitalisat(digitalisatId, category)">
+            <span class="fa fa-unlock-alt" style="color: #f8f9fa"></span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #popTextSearchHelper>
+  <body class="container-fluid">
+  <small> <b>BEGRIFF1 BEGRIFF2 -></b> Begriff1 oder Begriff2 kommen auf einer Seite vor bspw.: <b>Bremen Hamburg</b></small>
+    <br>
+  <small> <b>BEGRIFF1 & BEGRIFF2 -></b> Begriff1 und Begriff2 kommen auf einer Seite vor bspw.: <b>Berlin & OFP</b></small>
+    <br>
+    <small> <b>BEGRIFF1 <-> BEGRIFF2 -></b> Begriff1 muss direkt von Begriff2 gefolgt werden bspw.: <b>Hamburger <-> Freihafen</b></small>
+    <br>
+    <small> <b>BEGR* -></b> Nur der Anfangsteil des Suchbegriffs muss übereinstimmen bspw.: <b>Oberfin*</b></small>
+    <br><br>
+    <small> <b>Groß- und Kleinschreibungen werden bei der Suche ignoriert.</b></small>
+  </body>
+</ng-template>
+
+<app-digitalisat-query-export #exportQueryRef></app-digitalisat-query-export>

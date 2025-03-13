@@ -1,0 +1,48 @@
+<div class="container-fluid" style="height: 100%; position: absolute">
+  <div class="row align-items-center"  style="min-height: 4rem; background-color: lightskyblue">
+    <div class="col-auto me-auto">
+      <h5>Vorgang {{vorgang?.name}}</h5>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-white btn-rounded" title="PDF Herunterladen"
+              (click)="downloadPdf(loadingModalTemplate, comments)">
+        <span style="color: #404040"><span class="fa fa-file-pdf-o"></span> </span>
+      </button>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-white btn-rounded" [disabled]="false" (click)="sendEmail()">
+        <span style="color: #404040">als Anhang versenden <span class="fa fa-envelope-o"></span> </span>
+      </button>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-white btn-rounded" routerLink="/vorgaenge">
+        <span style="color: #404040">zurück zur Übersicht</span>
+      </button>
+    </div>
+  </div>
+  <div class="row" style="height: 100%">
+    <div class="wrap-images" #wrapImages (scroll)="onScroll($event)">
+      <app-gallery-image-viewer [digitalisatImages]="this.digitalisatImages" [(singleImageView)]="this.singleImageView"
+                                [category]="this.vorgang?.searchCategory"
+                                [disableCategoryFunctions] = true
+                                (singleImageViewChange)="onChangeImageView($event)">
+      </app-gallery-image-viewer>
+    </div>
+    <div class="col-sm-auto p-0" style="height: 100%; overflow-y: hidden;">
+      <app-splitter [parent]="wrapImages"></app-splitter>
+    </div>
+    <div class="col-lg p-0 me-0" style="height: 100%; overflow: hidden;">
+      <app-metadata-comments-view #comments [digitalisat]="vorgang?.digitalisat" [reference]="vorgang?.name"></app-metadata-comments-view>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title">Erstellung der PDF</h4>
+  </div>
+  <div class="modal-body">
+    <p>Bitte warten PDF erstellen...</p>
+    <i class="fa fa-spinner fa-spin" style="font-size:32px; margin-left: 50%"></i>
+  </div>
+</ng-template>

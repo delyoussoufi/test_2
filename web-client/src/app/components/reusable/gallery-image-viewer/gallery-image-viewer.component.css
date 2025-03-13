@@ -1,0 +1,51 @@
+div.gallery {
+  margin: 8px;
+  border: 1px solid #777;
+  float: left;
+  width: 200px;
+  height: 325px;
+  border-radius: 8px 8px 8px 8px;
+}
+
+div.gallery:hover {
+  border: 1px solid #111;
+}
+
+div.gallery img {
+  min-height: 200px;
+  /*min-width: 200px;*/
+  width: 100%;
+  height: 267px;
+  /*object-fit: cover;*/
+}
+
+div.desc {
+  padding: 10px;
+  height: 80px;
+  font-size: smaller;
+  text-align: center;
+  word-wrap:break-word;
+  background-color:  #f8f9fa;
+}
+
+div.order {
+  text-align: center;
+  color: white;
+  background-color: #607D8B;
+  border-radius: 8px 8px 0px 0px;
+  width: 100%;
+  height:25px;
+
+}
+
+div.order.true {
+  color: #111111;
+  background-color: lightskyblue;
+}
+
+
+.image-full-view{
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+}

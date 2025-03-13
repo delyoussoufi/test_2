@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Nutzerprofil</h3>
+  </div>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="username">Nutzername</label>
+      <div class="col-sm-10 mb-2">
+        <input type="text" id="username" class="form-control" [(ngModel)]="profileUser.username" name="username" placeholder="Nutzername" readonly>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="forename">Vorname</label>
+      <div class="col-sm-10 mb-2">
+        <input type="text" id="forename" class="form-control" [(ngModel)]="profileUser.forename" name="forename" placeholder="Vorname">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="surname">Nachname</label>
+      <div class="col-sm-10 mb-2">
+        <input type="text" id="surname" autocomplete="username"
+               class="form-control" [(ngModel)]="profileUser.surname" name="surname" placeholder="Nachname">
+      </div>
+    </div>
+    <div class="alert alert-info">
+      Wenn die Passwort-Felder leer bleiben, wird das Password nicht geändert.
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="password">Passwort</label>
+      <div class="col-sm-10 mb-2">
+        <input type="password" id="password" autocomplete="new-password" class="form-control"
+               [(ngModel)]="profileUser.password" name="password" placeholder="Passwort">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="repeatedPassword">Passwort wiederholen</label>
+      <div class="col-sm-10 mb-2">
+        <input type="password" id="repeatedPassword" autocomplete="new-password"
+               class="form-control" [(ngModel)]="profileUser.repeatedPassword" name="repeatedPassword"
+          placeholder="Passwort wiederholen">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-12 col-sm-offset-6">
+        <button type="button" class="btn btn-primary" (click)="updateProfile()">Nutzereinstellungen ändern</button>
+      </div>
+    </div>
+  </form>
+</div>

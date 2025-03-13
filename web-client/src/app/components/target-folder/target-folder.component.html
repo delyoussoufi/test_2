@@ -1,0 +1,93 @@
+<ng-template #addTargetFolderModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Zielverzeichnis hinzufügen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie ein neues Zielverzeichnis hinzufügen?</p>
+    <div class="form-group">
+      <label class="control-label col-sm-4" for="targetFolderPath">Pfad</label>
+      <div class="col-sm-12">
+        <input type="text" id="targetFolderPath" class="form-control" name="targetFolderPath" [(ngModel)]="addTargetFolderPath" placeholder="Pfad">
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="addTargetFolderFromModal()">Hinzufügen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeAddTargetFolderModal()">Abbrechen</button>
+  </div>
+</ng-template>
+<ng-template #activateTargetFolderModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Zielverzeichnis aktivieren</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie das Zielverzeichnis aktivieren?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="activateTargetFolderFromModal()">Aktivieren</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeActivateTargetFolderModal()">Abbrechen</button>
+  </div>
+</ng-template>
+<ng-template #deleteTargetFolderModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Zielverzeichnis löschen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie das Zielverzeichnis löschen?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="deleteTargetFolderFromModal()">Löschen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeDeleteTargetFolderModal()">Abbrechen</button>
+  </div>
+</ng-template>
+<div class="container">
+  <div *ngIf="this.diskInfo$ | async as data" class="relative">
+    <canvas baseChart height="50"
+            [data]="data"
+            [type]="doughnutChartType"
+            [legend]="true"
+            [options]="doughnutOptions">
+    </canvas>
+    <div class="absolute-center text-center">
+      <p>{{totalDiskSpace | number:'1.0-0'}}</p>
+      <p class="sm">Total</p>
+      <p> {{unit}}</p>
+    </div>
+  </div>
+  <table class="table table-striped table-hover table-condensed" style="margin-top: 10px">
+    <thead>
+    <tr>
+      <th>Pfad</th>
+      <th style="text-align:center">aktiv</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let targetFolder of targetFolders">
+      <td contenteditable="true" (keyup)="changePathValue(targetFolder, $event)">{{targetFolder.path}}</td>
+      <td style="text-align:center">
+        <span *ngIf="targetFolder.active == true" class="fa fa-check-square"></span>
+      </td>
+      <td>
+        <div class="pull-right">
+          <button *ngIf="hasRole('ROLE_ADMIN')" type="button" class="btn btn-default" title="speichern" style="color:#007bff"
+                  [disabled]="!(targetFolder.editPath || targetFolder.path)" (click)="saveTargetFolder(targetFolder)">
+            <span class="fa fa-floppy-o"></span>
+          </button>
+          <a (click)="openActivateTargetFolderModal(activateTargetFolderModalTemplate, targetFolder.id)"
+             class="btn btn-default" *ngIf="hasRole('ROLE_ADMIN')" title="aktivieren" style="color:#007bff">
+            <span class="fa fa-power-off"></span>
+          </a>
+          <a (click)="openDeleteTargetFolderModal(deleteTargetFolderModalTemplate, targetFolder)"
+             class="btn btn-default" *ngIf="hasRole('ROLE_ADMIN')" title="löschen" style="color:#007bff">
+            <span class="fa fa-trash"></span>
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="pb-2 mt-4 mb-2">
+    <button type="button" class="btn btn-primary" (click)="openAddTargetFolderModal(addTargetFolderModalTemplate)">Zielverzeichnis hinzufügen</button>
+  </div>
+</div>

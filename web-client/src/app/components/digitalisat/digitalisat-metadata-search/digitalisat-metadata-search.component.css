@@ -1,0 +1,17 @@
+.btn-select {
+  color: black;
+  border-color: lightgray;
+  background-color: lightgray;
+
+}
+
+.btn-select:hover {
+  color: black;
+  border-color: gray;
+}
+
+.btn-select:focus {
+  color: black;
+  background-color: white;
+}
+

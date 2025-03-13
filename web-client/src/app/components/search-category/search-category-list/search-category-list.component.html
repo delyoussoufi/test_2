@@ -1,0 +1,209 @@
+<div class="container-fluid">
+  <div class="row mb-2 mt-3">
+    <div class="col align-self-start">
+      <div class="pull-left">
+        <button type="button" class="btn btn-info" (click)="openModal(reorderModalTemplate)">Reorder</button>
+      </div>
+    </div>
+    <div class="col align-self-end">
+      <div class="pull-right me-2">
+        <button type="button" class="btn btn-info" (click)="resetFiltersAndSearch()">Suche zurücksetzen</button>
+      </div>
+      <div class="pull-right me-2">
+        <button class="btn btn-primary" type="button" (click)="collapse()">Suchen</button>
+      </div>
+      <div class="pull-right me-2">
+        <a (click)="openExportModal(exportModalTemplate)" class="btn btn-default" title="Excel-Export">
+          <span class="fa fa-file-excel-o"></span>
+        </a>
+      </div>
+      <div class="pull-right me-2">
+        <a routerLink="createSearchCategory" class="btn btn-default" *ngIf="hasRight('RIGHT_CATEGORY_EDIT')" title="Suchkategorie anlegen">
+          <span class="fa fa-plus"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="filterCollapse" [collapse]="isCollapsed">
+    <div class="card">
+      <div class="card-header">
+        <strong class="card-title">Suchen</strong>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="name">Name</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="name" name="name" class="form-control" [(ngModel)]="searchParams.name" placeholder="Name">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="description">Beschreibung</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="description" name="description" class="form-control" [(ngModel)]="searchParams.description" placeholder="Beschreibung">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label>Operator</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <div class="btn-group" btnRadioGroup [(ngModel)]="searchParams.operator">
+              <label class="btn btn-primary" btnRadio="CONTAINS"
+                     uncheckable tabindex="0" role="button">enthält</label>
+              <label class="btn btn-primary" btnRadio="EQUAL"
+                     uncheckable tabindex="0" role="button">ist gleich</label>
+              <label class="btn btn-primary" btnRadio="BEGINSWITH"
+                     uncheckable tabindex="0" role="button">beginnt mit</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary me-1" type="button" (click)="search()">Suchen</button>
+        <button class="btn btn-info" type="button" (click)="resetFilters()">Filter entfernen</button>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+    <tr>
+      <th>Order</th>
+      <th>Name</th>
+      <th>Beschreibung</th>
+      <th>Suchbegriffe</th>
+      <th>Ignoriereliste</th>
+      <th>Sperrliste</th>
+      <th></th>
+    </tr>
+    <tr>
+      <th><a href="javascript:void(0)" (click)="sort('order')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th><a href="javascript:void(0)" (click)="sort('name')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let category of searchCategories">
+      <td>{{category.order}}</td>
+      <td>{{category.name}}</td>
+      <td>{{category.description}}</td>
+      <td [innerHTML]="displaySearchValues(category.searchTerms)"></td>
+      <td [innerHTML]="displaySearchValues(category.ignoreList)"></td>
+      <td [innerHTML]="displaySearchValues(category.blacklist)"></td>
+      <td style="white-space: nowrap">
+        <div class="pull-right">
+          <button class="btn btn-xs btn-default tableButton" (click)="exportCategoryResults(exportQueryRef, category.id)"
+                  *ngIf="hasRight('RIGHT_CATEGORY_VIEW')" title="export results">
+            <span class="fa fa-file-excel-o"></span>
+          </button>
+          <a routerLink="editSearchCategory/{{category.id}}" class="btn btn-xs btn-default tableButton" *ngIf="hasRight('RIGHT_CATEGORY_EDIT')" title="bearbeiten">
+            <span class="fa fa-pencil"></span>
+          </a>
+          <a (click)="openDeleteModal(deleteModalTemplate, category)" class="btn btn-xs btn-default tableButton" *ngIf="hasRight('RIGHT_CATEGORY_EDIT')" title="löschen">
+            <span class="fa fa-trash-o"></span>
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="row justify-content-end">
+    <div class="col-auto">
+      <div class="btn-group">
+        <div class="me-2" dropdown>
+          <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                  aria-controls="dropdown-basic">
+            {{itemsPerPage}} <span class="caret"></span>
+          </button>
+          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+              role="menu" aria-labelledby="button-basic">
+            <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(10)">10</button></li>
+            <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(20)">20</button></li>
+            <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(50)">50</button></li>
+            <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(100)">100</button></li>
+          </ul>
+        </div>
+        <div>
+          <pagination [totalItems]="totalItems" [(ngModel)]="page"
+                      [itemsPerPage]="itemsPerPage"
+                      (pageChanged)="pageChanged($event)" [maxSize]=5
+                      [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                      lastText="&raquo;">
+          </pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #reorderModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Reihenfolge Suchkategorien</h4>
+  </div>
+  <div class="modal-body" style="overflow: auto">
+    <div class="row">
+      <div class="col">
+        <bs-sortable
+          [(ngModel)]="searchCategories"
+          fieldName="name"
+          itemClass="sortable-item"
+          itemActiveClass="sortable-item-active"
+          placeholderItem="Drag here"
+          placeholderClass="placeholderStyle text-center"
+          wrapperClass="sortable-wrapper">
+        </bs-sortable>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="reorderSearchCategories(); closeModal()">Anwenden</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Abbrechen</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Suchkategorie löschen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie die Suchkategorie wirklich löschen?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="deleteSearchCategoryFromModal()">Löschen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeDeleteModal()">Abbrechen</button>
+  </div>
+</ng-template>
+<ng-template #exportModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Export von Suchkategorien</h4>
+  </div>
+  <div class="modal-body">
+    <div class="col text-center">
+      <h4>Auswahl des Datenbereichs</h4>
+    </div>
+    <div class="col text-center">
+      Sie können entweder die Suchkategorien der aktuellen Suche oder alle Suchkategorien exportieren.
+    </div>
+    <div class="col text-center">
+      <fieldset>
+        <label>
+          <input type="radio" [(ngModel)]="exportType" value="search"> Nur aktuelle Suche
+        </label>&nbsp;
+        <label>
+          <input type="radio" [(ngModel)]="exportType" value="all"> Alle Datensätze
+        </label>
+      </fieldset>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="exportSearchCategoriesFromModal()">Exportieren</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeExportModal()">Abbrechen</button>
+  </div>
+</ng-template>
+
+<app-digitalisat-query-export [fileName]="'category-result-export.xlsx'" [modalTitle]="'Category results Exportieren'"
+                              #exportQueryRef></app-digitalisat-query-export>

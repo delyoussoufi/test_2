@@ -1,0 +1,8 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Nutzer bearbeiten</h3>
+  </div>
+  <span *ngIf="this.user$ | async">
+    <app-user-role-rights [(user)]="this.user" (userSave)="this.updateUser($event)"></app-user-role-rights>
+  </span>
+</div>

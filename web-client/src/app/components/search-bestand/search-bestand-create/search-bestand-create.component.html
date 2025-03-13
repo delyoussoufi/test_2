@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Hinzufügen</h3>
+  </div>
+
+  <form class="form-horizontal">
+    <div class="row form-group">
+      <div class="col-sm-2">
+        <label class="control-label">Name</label>
+      </div>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input type="text" class="form-control" autocomplete="off"
+                 [(ngModel)]="selectedBestand.name" name="bestand"
+                 [typeahead]="bestandDataSource"
+                 (typeaheadLoading)="changeTypeaheadLoading($event)"
+                 (typeaheadOnSelect)="typeaheadOnSelect($event)"
+                 [typeaheadOptionsLimit]="10"
+                 typeaheadOptionField="name"
+                 placeholder="Bestand">
+          <div *ngIf="bestandTypeaheadLoading"></div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-start">
+      <button role="button" type="button" class="btn btn" routerLink="/admin/searchBestaende">Zurück</button>
+      <button type="button" class="btn btn-primary" (click)="createSearchBestand()">Speichern</button>
+    </div>
+  </form>
+</div>

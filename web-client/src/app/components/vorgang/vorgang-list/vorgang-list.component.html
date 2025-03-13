@@ -1,0 +1,96 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="form-group col-sm-2">
+      <label for="searchCategory">Suchparameter:</label>
+      <select class="form-select" id="searchCategory"
+              [ngModel]="selectedSearchCategory" (ngModelChange)="onChangeSearchCategory($event)">
+        <option [ngValue]="null">-</option>
+        <option [ngValue]="searchCategory" *ngFor="let searchCategory of this.searchCategories$ | async">
+          {{searchCategory.name}}
+        </option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <label class="mt-lg-5 mb-0" style="font-size: 10pt;">gefunden: {{totalItems}} Vorgänge</label>
+    </div>
+  </div>
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+    <tr>
+      <!-- <th><input type="checkbox" (click)="toggleAllSearchItems()"></th> -->
+      <th>Vorgangsnummer</th>
+      <th>Aktensignatur</th>
+      <th>Registratursignatur</th>
+      <th>Name</th>
+      <th>erstellt am</th>
+      <th></th>
+    </tr>
+    <tr>
+      <th><a href="javascript:void(0)" (click)="search('vorgang_order')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th><a href="javascript:void(0)" (click)="search('create_date')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let vorgang of vorgaenge">
+      <td>{{vorgang.name}}</td>
+      <td>{{vorgang.digitalisat?.signature}}</td>
+      <td>{{vorgang.digitalisat?.scopeData?.registrySignature}}</td>
+      <td>{{vorgang.digitalisat?.scopeData?.title}}</td>
+      <td>{{vorgang.createDate}}</td>
+      <td style="white-space: nowrap">
+        <div class="pull-right">
+          <a routerLink="viewVorgang/{{vorgang.id}}" class="btn btn-default tableButton" *ngIf="hasRight('RIGHT_VORGANG')" title="bearbeiten">
+            <span class="fa fa-eye icon-blue icon-medium"></span>
+          </a>
+          <a *ngIf="hasRight('RIGHT_VORGANG')" class="btn btn-xs btn-default tableButton"
+             (click)="openDeleteModal(deleteModalTemplate, vorgang)" title="löschen">
+            <span class="fa fa-trash-o"></span>
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-end">
+    <div class="p-2">
+      <div class="btn-group" dropdown style="padding-right: 10px;">
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                aria-controls="dropdown-basic">
+          {{itemsPerPage}} <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(10)">10</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(20)">20</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(50)">50</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(100)">100</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="p-2">
+      <pagination [totalItems]="totalItems" [(ngModel)]="page"
+                  [itemsPerPage]="itemsPerPage"
+                  (pageChanged)="pageChanged($event)" [maxSize]=5
+                  [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                  lastText="&raquo;">
+      </pagination>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Vorgang löschen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie den Vorgang {{this.deleteVorgang?.name}} wirklich löschen?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="deleteVorgangFromModal()">Löschen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeDeleteModal()">Abbrechen</button>
+  </div>
+</ng-template>

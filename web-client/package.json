@@ -1,0 +1,53 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^19.2.1",
+    "@angular/common": "^19.2.1",
+    "@angular/compiler": "^19.2.1",
+    "@angular/core": "^19.2.1",
+    "@angular/forms": "^19.2.1",
+    "@angular/platform-browser": "^19.2.1",
+    "@angular/platform-browser-dynamic": "^19.2.1",
+    "@angular/router": "^19.2.1",
+    "@types/chart.js": "^2.9.41",
+    "bootstrap": "^5.3.3",
+    "chart.js": "~4.4.8",
+    "core-js": "^3.41.0",
+    "font-awesome": "^4.7.0",
+    "ng2-charts": "~8.0.0",
+    "ngx-bootstrap": "~19.0.2",
+    "ngx-ui-switch": "^15.0.0",
+    "npm": "^11.2.0",
+    "rxjs": "7.8.2",
+    "systemjs": "6.15.1",
+    "tslib": "^2.8.1",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.1",
+    "@angular/cli": "^19.2.1",
+    "@angular/compiler-cli": "^19.2.1",
+    "@angular/language-service": "^19.2.1",
+    "@types/jasmine": "~5.1.7",
+    "jasmine-core": "~5.6.0",
+    "jasmine-spec-reporter": "~7.0.0",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "^2.1.0",
+    "ts-node": "~10.9.2",
+    "typescript": "^5.8.2"
+  }
+}

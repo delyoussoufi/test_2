@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Nutzer anlegen</h3>
+  </div>
+
+  <app-user-role-rights [(user)]="this.user" (userSave)="this.createUser($event)"></app-user-role-rights>
+
+<!--  <form class="form-horizontal" (keydown.enter)="createUser()" autocomplete="off">-->
+<!--    <div class="form-group">-->
+<!--      <label class="control-label col-sm-2 mb-1" for="username">Nutzername</label>-->
+<!--      <div class="col-sm-10 mb-2">-->
+<!--        <div class="input-group">-->
+<!--          <input type="text" id="username" class="form-control" name="username" [(ngModel)]="user.username"-->
+<!--                 placeholder="Nutzername"  autocomplete="off" required>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label class="control-label col-sm-2 mb-1" for="password">Passwort</label>-->
+<!--      <div class="col-sm-10 mb-2">-->
+<!--        <div class="input-group">-->
+<!--          <input id="password" type="password" class="form-control" name="password"-->
+<!--                 [(ngModel)]="user.password" placeholder="Passwort" autocomplete="off">-->
+<!--&lt;!&ndash;          <input id="password" type="password" class="form-control" name="password" [(ngModel)]="user.password"&ndash;&gt;-->
+<!--&lt;!&ndash;                 autocomplete="off" placeholder="Passwort">&ndash;&gt;-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label class="control-label col-sm-2 mb-1" for="forename">Vorname</label>-->
+<!--      <div class="col-sm-10 mb-2">-->
+<!--        <input type="text" id="forename" class="form-control" name="forename" [(ngModel)]="user.forename" placeholder="Vorname" required>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label class="control-label col-sm-2 mb-1" for="surname">Nachname</label>-->
+<!--      <div class="col-sm-10 mb-2">-->
+<!--        <input type="text" id="surname" class="form-control" name="surname" [(ngModel)]="user.surname" placeholder="Nachname">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label class="control-label col-sm-2 mb-1">Rollen</label>-->
+<!--      <div class="col-sm-10 mb-2">-->
+<!--        <div class="form-check">-->
+<!--          <div *ngFor="let role of roles">-->
+<!--            <input class="form-check-input" id="{{role.authority}}" type="checkbox" [checked]="role.selected" (change)="role.selected = !role.selected">-->
+<!--            <label class="form-check-label" for="{{role.authority}}">-->
+<!--              {{role.label}}-->
+<!--            </label>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <div class="col-sm-12 col-sm-offset-6">-->
+<!--        <button role="button" type="button" class="btn btn" routerLink="/admin/users">Zurück</button>-->
+<!--        <button type="button" class="btn btn-primary" (click)="createUser()">Speichern</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </form>-->
+</div>

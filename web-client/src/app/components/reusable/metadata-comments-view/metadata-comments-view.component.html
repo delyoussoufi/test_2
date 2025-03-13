@@ -1,0 +1,75 @@
+<ng-container>
+  <div class="row ms-1" style="height: 100%">
+    <div class="col-lg wrap-info">
+      <div class="scope-info-card">
+        <div class="row mb-1 mt-2">
+          <div class="col-auto"><b>Erschließungsinformationen:</b></div>
+          <a target="_blank" class="col-auto ms-auto fa fa-external-link" href="{{digitalisat?.scopeData.link}}" style="text-decoration: none"></a>
+        </div>
+        <div><b>Registratursignatur: </b> {{digitalisat?.scopeData?.registrySignature}}</div>
+        <div><b>Name: </b> {{digitalisat?.scopeData?.title}}</div>
+        <div><b>Geburtsname: </b> {{digitalisat?.scopeData?.geburtsname}}</div>
+        <div><b>Laufzeit: </b> {{digitalisat?.scopeData?.datFindbuch}}</div>
+        <div><b>Geburtsort:</b> {{digitalisat?.scopeData?.geburtsort}}</div>
+        <div><b>Geburtsdatum: </b> {{digitalisat?.scopeData?.geburtsdatum}}</div>
+        <div><b>Wohnort: </b> {{digitalisat?.scopeData?.wohnort}}</div>
+        <div><b>in Akte genannt: </b> {{digitalisat?.scopeData?.associates}}</div>
+      </div>
+      <div class="col-lg wrap-user-comment mt-1">
+        <div class="row m-4">
+          <label>Notizen zur Akte: </label>
+          <textarea class="form-control" [(ngModel)]="userComment" id="userNote" rows="3" placeholder="Kommentar hinzufügen"></textarea>
+          <div class="col-auto ms-auto mt-1 pe-0">
+            <button class="btn btn-primary pull-right" (click)="onAddComment()">Hinzufügen</button>
+          </div>
+        </div>
+        <div class="m-4 col-lg wrap-scroll">
+          <div *ngFor="let uc of userComments;">
+            <div class="me-4 comment {{!uc.reference?.startsWith('PDF')}}">
+              <app-comment-viewer [id]="uc"
+                                  [canReply]="!uc.reference?.startsWith('PDF')"
+                                  [editable]="!uc.reference?.startsWith('PDF')"
+                                  [title]="uc.userName?.toUpperCase() + ' am ' + this.dataPipe.transform(uc.postDate)  + ' für Klass - ' + uc.reference"
+                                  [comment]="uc.comment" [isOwner]="isCommentOwner(uc)"
+                                  (save)="onClickSaveCommentEdit($event)"
+                                  (saveReply)="onClickSaveCommentReply($event)"
+                                  (delete)="openUserCommentDeleteModal(deleteCommentTemplate, uc)">Hi
+              </app-comment-viewer>
+              <div *ngFor="let ur of uc.replies;">
+                <div class="comment reply">
+                  <app-comment-viewer [id]="ur"
+                                      [canReply]="false"
+                                      [title]="'Ergänzung von ' + ur.userName?.toUpperCase() + ' am ' + this.dataPipe.transform(ur.postDate)"
+                                      [comment]="ur.comment" [isOwner]="isCommentOwner(ur)"
+                                      (save)="onClickSaveCommentEdit($event)"
+                                      (delete)="openUserCommentDeleteModal(deleteCommentTemplate, ur)">Hi
+                  </app-comment-viewer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #deleteCommentTemplate let-c="close" let-d="dismiss" class="modal fade">
+  <div class="modal-header">
+    <h4 class="modal-title">Kommentar löschen</h4>
+  </div>
+  <div class="modal-body">
+    Möchten Sie den Kommentar wirklich löschen?
+    <div *ngIf="this.deleteComment?.replies.length > 0">
+      <br>
+      <b><span style="color: red">Wichtig!! </span>Alle Antworten auf Ihren Kommentar werden ebenfalls gelöscht.</b>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark"
+            (click)="onDeleteCommentFromModal()">bestätigen</button>
+    <button type="button" class="btn btn-outline-dark"
+            (click)="closeUserCommentDeleteModal()">Abbrechen</button>
+  </div>
+</ng-template>
+

@@ -1,0 +1,132 @@
+<ng-container xmlns="http://www.w3.org/1999/html">
+  <div  *ngIf="!singleImageView" class="d-flex align-content-center flex-wrap">
+    <div  *ngFor="let image of digitalisatImages; index as i">
+      <div *ngIf="!this.selectable">
+        <div class="gallery" style="display: inline-block;">
+          <div class="order {{isImageInCategory(image)}}">{{image.order}}</div>
+          <a  href="#" (click)="setFoundTermsObservable(image.id)"
+              [popover]="popFoundTerms" outsideClick="true" delay=500>
+            <img *appInView  [src]="this.imagesUrls$[i] | async" class="loading"
+                 title="{{image.size | number:'1.1-2'}} MB" alt="loading"
+                 (load)="onLoadImage(image, i)" height="267" width="200">
+          </a>
+          <div class="d-flex flex-column">
+<!--            <div class="desc">{{image.name}}</div>-->
+            <div class="d-flex justify-content-end">
+              <a (click)="openModal(imageZoomModal, image, i)" class="btn btn-sm btn-default me-auto" title="Vorschau">
+                <span class="fa fa-search-plus icon-blue"></span>
+              </a>
+              <div *ngIf="this.category && !this.disableCategoryFunctions">
+                <ng-container
+                  [ngTemplateOutlet]="imageCategoryHandler"
+                  [ngTemplateOutletContext]="{image:image}">
+                </ng-container>
+              </div>
+              <a (click)="openModal(imageNersModal, image, i)" class="btn btn-sm btn-default ms-auto" title="NERs">
+                <span class="fa fa fa-universal-access icon-blue"></span>
+              </a>
+              <a (click)="onSelectImage(image, i)" class="btn btn-sm btn-default" title="Bildansicht">
+                <span class="fa fa-eye icon-blue"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="this.selectable">
+        <app-selectable-image *appInView [src]="this.imagesUrls$[i] | async" [itemId]="image.id"
+                              [isSelect]="this.isImageSelected(image)"
+                              [name]="image.name" [title]="image.order.toString()"
+                              [highlightTitle]="isImageInCategory(image)"
+                              (selectChanged)="this.onSelectImagesChange($event)">
+
+        </app-selectable-image>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="singleImageView">
+    <div class="row justify-content-end">
+      <div class="col-auto" style="margin-top: 5px">
+        <a class="fa fa-reply icon-blue" style="font-size: 25px; padding-right: 15px;"
+           title="zurück" (click)="onSelectImage(null, 0)"></a>
+      </div>
+    </div>
+    <app-digitalisat-image-view [image]="selectedImage" [selectedWord]="this.textSearch"
+                                [enableCategoryFunction]="this.category && !this.disableCategoryFunctions"
+                                (imageLoaded)="onLoadImage(this.selectedImage, this.selectedImageIdx)"
+                                [category]="this.category" [imageUrl]="this.imagesUrls$[this.selectedImageIdx] | async"
+                                [imageName]="selectedImage?.name" (nextImage)="nextImage()"
+                                [disableRightArrow]="this.disableRightArrow" [disableLeftArrow]="this.disableLeftArrow"
+                                (addImageToCategory)="this.addImageToCategory.emit($event)"
+                                (removeImageFromCategory)="this.removeImageFromCategory.emit($event)"
+                                (prevImage)="prevImage()">
+    </app-digitalisat-image-view>
+  </div>
+</ng-container>
+
+<ng-template #imageCategoryHandler let-image='image' let-size="size">
+  <div *ngIf="isImageInCategory(image); then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+      <a (click)="this.removeImageFromCategory.emit(image)"
+         class="btn btn-sm btn-default" title="Bild aus dieser Kategorie entfernen">
+        <span class="fa fa-minus icon-blue {{size}}"></span>
+      </a>
+    </ng-template>
+    <ng-template #elseBlock>
+      <a (click)="this.addImageToCategory.emit(image)"
+         class="btn btn-sm btn-default" title="Bild zu dieser Kategorie hinzufügen">
+        <span class="fa fa-plus icon-blue {{size}}"></span>
+      </a>
+    </ng-template>
+</ng-template>
+
+<ng-template #popFoundTerms>
+  <div *ngIf="!foundTermsObservable$">
+    <span class="fa fa-spinner fa-spin "></span>
+  </div>
+  <div  *ngFor="let items of foundTermsObservable$ | async">
+    <div>{{ items?.join(', ') }}</div>
+  </div>
+</ng-template>
+
+<ng-template #imageZoomModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <a (click)="this.closeModal()"
+       class="btn btn-sm btn-default me-auto">
+      <span class="fa fa fa-close icon-blue" style="font-size: 18px"></span>
+    </a>
+    <span class="me-auto">{{this.zoomImage?.image?.name}}</span>
+    <a (click)="onSelectImage(this.zoomImage?.image, this.zoomImage?.index); this.closeModal()" class="btn btn-sm btn-default" title="Bildansicht">
+      <span class="fa fa-eye icon-blue" style="font-size: 18px"></span>
+    </a>
+  </div>
+  <div class="modal-body p-0">
+    <a target="_blank" [href]="this.getImageUrl(this.zoomImage?.image)">
+      <img [src]="this.getImageUrl(this.zoomImage?.image)" [name]="this.zoomImage?.image?.name"
+           alt="{{this.zoomImage?.image?.order}}" style="display: block; object-fit: contain; width: 100%"
+           title="Bild: {{this.zoomImage?.image?.order}}">
+    </a>
+  </div>
+</ng-template>
+
+
+<ng-template #imageNersModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <a (click)="this.closeModal()"
+       class="btn btn-sm btn-default me-auto">
+      <span class="fa fa fa-close icon-blue" style="font-size: 18px"></span>
+    </a>
+    <span class="me-auto">{{this.zoomImage?.image?.name}}</span>
+    <ui-switch class="me-3" checkedLabel="Clean Text" uncheckedLabel="Original" color="#007BFF"
+               checkedTextColor="#FFFFFF" (valueChange)="onCleanTextValueChange($event)"
+               [checked]="this.cleanText">
+
+    </ui-switch>
+  </div>
+  <div class="modal-body p-0">
+    <div class="text-view">
+      <div *ngIf="(this.imageNers$ | async) as foundEntities" style="white-space: pre-wrap; word-break: break-word">
+        <p [innerHTML]="foundEntities?.safeText"></p>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,133 @@
+<div class="container-fluid">
+  <div class="row justify-content-end mb-1">
+    <div class="col-auto" style="padding-right: 10px;">
+      <a routerLink="createUser" class="btn btn-default" *ngIf="hasRole('ROLE_ADMIN')" title="Nutzer anlegen">
+        <span class="fa fa-plus"></span>
+      </a>
+    </div>
+    <div class="col-auto" style="padding-right: 10px;">
+      <button class="btn btn-primary" type="button" (click)="collapse()">Suchen</button>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="btn btn-info" (click)="resetFiltersAndSearch()">Suche zurücksetzen</button>
+    </div>
+  </div>
+  <div id="filterCollapse" [collapse]="isCollapsed">
+    <div class="card">
+      <div class="card-header">
+        <strong class="card-title">Suchen</strong>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="username">Benutzername</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="username" name="username" class="form-control" [(ngModel)]="searchParams.username" placeholder="Benutzername">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="forename">Vorname</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="forename" name="forename" class="form-control" [(ngModel)]="searchParams.forename" placeholder="Vorname">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="surname">Nachname</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="surname" name="surname" class="form-control" [(ngModel)]="searchParams.surname" placeholder="Nachname">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="operator">Operator</label>
+          </div>
+          <div id="operator" class="form-group col-sm-10">
+            <div class="btn-group" btnRadioGroup [(ngModel)]="searchParams.operator">
+              <label class="btn btn-primary" btnRadio="CONTAINS"
+                     uncheckable tabindex="0" role="button">enthält</label>
+              <label class="btn btn-primary" btnRadio="EQUAL"
+                     uncheckable tabindex="0" role="button">ist gleich</label>
+              <label class="btn btn-primary" btnRadio="BEGINSWITH"
+                     uncheckable tabindex="0" role="button">beginnt mit</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary me-1" type="button" (click)="search()">Suchen</button>
+        <button class="btn btn-info" type="button" (click)="resetFilters()">Filter entfernen</button>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+    <tr>
+      <!-- <th><input type="checkbox" ng-click="toggleAllSearchItems()"></th> -->
+      <th>Name</th>
+      <th>Rollen</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{user.username}}</td>
+      <td>
+        <i class="fa fa-eye me-1" *ngIf="userHasRole(user, 'ROLE_VIEWER')" title="Betrachter"></i>
+        <i class="fa fa-user me-1" *ngIf="userHasRole(user, 'ROLE_USER')" title="Nutzer"></i>
+        <i class="fa fa-cogs" *ngIf="userHasRole(user, 'ROLE_ADMIN')" title="Administrator"></i>
+      </td>
+      <td>
+        <div class="pull-right">
+          <a routerLink="editUser/{{user.userId}}" class="btn btn-xs btn-default" *ngIf="hasRight('RIGHT_USER_EDIT')" title="edit">
+            <span class="fa fa-pencil"></span>
+          </a>
+          <a (click)="openDeleteModal(deleteModalTemplate, user)" class="btn btn-xs btn-default" *ngIf="hasRight('RIGHT_USER_EDIT')" title="delete">
+            <span class="fa fa-trash-o"></span>
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-end">
+    <div class="p-2">
+      <div class="btn-group" dropdown style="padding-right: 10px;">
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                aria-controls="dropdown-basic">
+          {{itemsPerPage}} <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(10)">10</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(20)">20</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(50)">50</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(100)">100</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="p-2">
+      <pagination [totalItems]="totalItems" [(ngModel)]="page"
+                  [itemsPerPage]="itemsPerPage"
+                  (pageChanged)="pageChanged($event)" [maxSize]=5
+                  [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                  lastText="&raquo;">
+      </pagination>
+    </div>
+  </div>
+</div>
+
+<ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Nutzer löschen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie den Nutzer wirklich löschen?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="deleteUserFromModal()">Löschen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeDeleteModal()">Abbrechen</button>
+  </div>
+</ng-template>

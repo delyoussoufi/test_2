@@ -1,0 +1,27 @@
+<ng-template #queryExportTemplate let-c="close" let-d="dismiss" class="modal fade">
+  <div class="modal-header">
+    <h4 class="modal-title">{{ this.modalTitle }}</h4>
+  </div>
+  <div class="modal-body">
+    <div>Möchten Sie diese Abfrage exportieren?</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="this.exportQuery(loadingModal)">bestätigen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="this.close()">Abbrechen</button>
+  </div>
+</ng-template>
+
+
+<div class="modal fade" bsModal #loadingModal="bs-modal" [config]="{backdrop: 'static'}"
+     tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        Please Wait creating file...
+      </div>
+      <div class="modal-body">
+        <i class="fa fa-spinner fa-spin" style="font-size:32px; margin-left: 50%"></i>
+      </div>
+    </div>
+  </div>
+</div>

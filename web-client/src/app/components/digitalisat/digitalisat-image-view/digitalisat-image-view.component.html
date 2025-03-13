@@ -1,0 +1,11 @@
+<app-ocr-image-viewer [src]="this.imageSrc" [selectedWord]="this.selectedWord" [imageId]="this.imageId"
+                      [enableCategoryFunction]="this.enableCategoryFunction"
+                      [isImageInCategory]="this.isImageInCategory()"
+                      [ocrData]="this.ocrData" [imageName]="imageName" [highlightData]="this.searchTermsFound"
+                      (imageLoaded)="onImageLoaded($event)" (prevImage)="prevImage.emit()"
+                      [disableLeftArrow]="this.disableLeftArrow" [disableRightArrow]="this.disableRightArrow"
+                      (nextImage)="nextImage.emit()"
+                      (removeImageFromCategory)="this.removeImageFromCategory.emit(this.image)"
+                      (addImageToCategory)="this.addImageToCategory.emit(this.image)">
+
+</app-ocr-image-viewer>

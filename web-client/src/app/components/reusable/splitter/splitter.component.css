@@ -1,0 +1,19 @@
+/*.splitter {*/
+/*  flex: 0 0 auto;*/
+/*  padding-left: 0;*/
+/*  width: 18px;*/
+/*  background: url(assets/images/vsizegrip.png) center center no-repeat white;*/
+/*  min-height: 100%;*/
+/*  height: 100px;*/
+/*  cursor: col-resize;*/
+/*}*/
+
+.splitter {
+    flex: 0 0 auto;
+    padding-left: 0;
+    width: 18px;
+    background: url(assets/images/vsizegrip.png) center center no-repeat white;
+    min-height: 100%;
+    height: 100px;
+    cursor: col-resize;
+}

@@ -1,0 +1,126 @@
+<div class="container-fluid">
+  <div class="row justify-content-end mb-1">
+    <div class="col-auto" style="padding-right: 10px;">
+      <a routerLink="createSearchBestand" class="btn btn-default" *ngIf="hasRight('RIGHT_BESTANDE_ADD')" title="Suchbestand anlegen">
+        <span class="fa fa-plus"></span>
+      </a>
+    </div>
+    <div class="col-auto" style="padding-right: 10px;">
+      <button class="btn btn-primary" type="button" (click)="collapse()">Suchen</button>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="btn btn-info" (click)="resetFiltersAndSearch()">Suche zurücksetzen</button>
+    </div>
+  </div>
+  <div id="filterCollapse" [collapse]="isCollapsed">
+    <div class="card">
+      <div class="card-header">
+        <strong class="card-title">Suchen</strong>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label for="name">Name</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <input type="text" id="name" name="name" class="form-control" [(ngModel)]="searchParams.name" placeholder="Name">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-2">
+            <label>Operator</label>
+          </div>
+          <div class="form-group col-sm-10">
+            <div class="btn-group" btnRadioGroup [(ngModel)]="searchParams.operator">
+              <label class="btn btn-primary" btnRadio="CONTAINS"
+                     uncheckable tabindex="0" role="button">enthält</label>
+              <label class="btn btn-primary" btnRadio="EQUAL"
+                     uncheckable tabindex="0" role="button">ist gleich</label>
+              <label class="btn btn-primary" btnRadio="BEGINSWITH"
+                     uncheckable tabindex="0" role="button">beginnt mit</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="button" (click)="search()">Suchen</button>
+        <button class="btn btn-info" type="button" (click)="resetFilters()">Filter entfernen</button>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Letzte Synchronisierung</th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr>
+      <th><a href="javascript:void(0)" (click)="sort('name')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th><a href="javascript:void(0)" (click)="sort('status')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th><a href="javascript:void(0)" (click)="sort('lastSynchronisation')" title="sortieren"><span class="fa fa-sort"></span></a></th>
+      <th></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let bestand of searchBestaende">
+      <td>{{bestand.name}}</td>
+      <td>{{bestand.statusInfo}}</td>
+      <td>{{bestand.lastSynchronization}}</td>
+      <td>
+        <ui-switch checkedLabel="An" uncheckedLabel="Angehalten" color="green" [checked]="bestand.status !== this.bestandPausedStatus"
+                   defaultBgColor="lightcoral" checkedTextColor="#FFFFFF"
+                   (valueChange)="onBestandPauseSwitchValueChange($event, bestand)" [disabled]="bestand.status === this.bestandRunningStatus">
+        </ui-switch>
+      </td>
+      <td style="white-space: nowrap">
+        <div class="pull-right">
+          <a (click)="openDeleteModal(deleteModalTemplate, bestand)" class="btn btn-xs btn-default tableButton"
+             *ngIf="hasRight('RIGHT_BESTANDE_ADD')" title="löschen">
+            <span class="fa fa-trash-o"></span>
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-end">
+    <div class="p-2">
+      <div class="btn-group" dropdown style="padding-right: 10px;">
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                aria-controls="dropdown-basic">
+          {{itemsPerPage}} <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(10)">10</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(20)">20</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(50)">50</button></li>
+          <li role="menuitem"><button class="dropdown-item" (click)="itemsPerPageChanged(100)">100</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="p-2">
+      <pagination [totalItems]="totalItems" [(ngModel)]="page"
+                  [itemsPerPage]="itemsPerPage"
+                  (pageChanged)="pageChanged($event)" [maxSize]=5
+                  [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                  lastText="&raquo;">
+      </pagination>
+    </div>
+  </div>
+</div>
+
+<ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Suchbestand löschen</h4>
+  </div>
+  <div class="modal-body">
+    <p>Möchten Sie den Suchbestand wirklich löschen?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="deleteSearchBestandFromModal()">Löschen</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeDeleteModal()">Abbrechen</button>
+  </div>
+</ng-template>

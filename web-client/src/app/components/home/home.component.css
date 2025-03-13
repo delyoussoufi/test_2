@@ -1,0 +1,20 @@
+.min-height {
+  min-height: 48px;
+}
+
+.jumbotron {
+  background-size: cover;
+  background-position: center center;
+}
+
+.jumbotron h1 {
+  color:#fff;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lead {
+  color:#fff;
+}

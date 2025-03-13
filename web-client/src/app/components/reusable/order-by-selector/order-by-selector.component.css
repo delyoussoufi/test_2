@@ -1,0 +1,7 @@
+.order-selected {
+  color: grey;
+}
+
+.order-selected.true {
+  color: #007bff;
+}

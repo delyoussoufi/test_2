@@ -1,0 +1,73 @@
+<form class="form-horizontal" (keydown.enter)="onSaveClick()">
+
+  <span *ngIf="this.userRoleRight$ | async"></span>
+  <div class="form-group">
+    <label class="control-label col-sm-2 mb-1" for="username">Nutzername</label>
+    <div class="col-sm-10 mb-2">
+      <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-user"></i>
+          </span>
+        <input type="text" id="username" class="form-control" name="username"
+               [(ngModel)]="user.username" placeholder="Nutzername" autocomplete="username"
+               required="true">
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2 mb-1" for="password">Passwort</label>
+    <div class="col-sm-10 mb-2">
+      <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-lock"></i>
+          </span>
+        <input id="password" type="password" class="form-control" name="password"
+               [(ngModel)]="user.password" placeholder="Passwort" autocomplete="current-password">
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2 mb-1" for="forename">Vorname</label>
+    <div class="col-sm-10 mb-2">
+      <input type="text" id="forename" class="form-control" name="forename" [(ngModel)]="user.forename" placeholder="Vorname" required="true">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2 mb-1" for="surname">Nachname</label>
+    <div class="col-sm-10 mb-2">
+      <input type="text" id="surname" class="form-control" name="surname" [(ngModel)]="user.surname" placeholder="Nachname">
+    </div>
+  </div>
+  <div class="row mt-3 mb-3">
+    <div class="col-auto">
+      <div class="form-check form-check-inline">
+        <label class="control-label col-sm-2 mb-1">Rollen</label>
+        <div *ngFor="let role of roles">
+          <input class="form-check-input" id="{{role.authority}}" type="radio" [checked]="role.selected"
+                 name="userRole" (change)="this.onSelectRole(role)">
+          <label class="form-check-label" for="{{role.authority}}">
+            {{role.label}}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <div class="form-check form-check-inline">
+        <label class="control-label col-sm-2 mb-1">Rights</label>
+        <div *ngFor="let right of this.rights">
+          <input class="form-check-input" id="{{right.right_id}}" type="checkbox"
+                 [checked]="right.selected" [disabled]="right.required" (change)="right.selected = !right.selected">
+          <label class="form-check-label" for="{{right.right_id}}">
+            {{right.label}}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-12 col-sm-offset-6">
+      <button role="button" type="button" class="btn btn" routerLink="/admin/users">Zurück</button>
+      <button type="button" class="btn btn-primary" (click)="onSaveClick()">Speichern</button>
+    </div>
+  </div>
+</form>

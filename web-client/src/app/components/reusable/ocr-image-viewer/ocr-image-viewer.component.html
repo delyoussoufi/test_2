@@ -1,0 +1,105 @@
+<!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
+<div class="container-fluid" style="z-index: inherit">
+  <div *ngIf="hasSearch" class="row m-auto justify-content-between">
+    <div class="form-group col-auto">
+      <label for="searchText"><h6>Suchbegriffe:</h6></label>
+      <input class="form-control" type="text" id="searchText" style="min-width: 300px; max-width: 500px"
+             [(ngModel)]="this.selectedWord" [typeaheadMultipleSearch]="true" (ngModelChange)="onChangeSearch($event)"
+             [value]="this.selectedWord"
+             typeaheadMultipleSearchDelimiters="&"
+             typeaheadWaitMs="100"
+             typeaheadOptionField="text"
+             [typeahead]="allWords">
+    </div>
+    <div class="col-auto align-self-center ms-auto">
+      <span *ngIf="showOcrData" class="btn fa fa-file-text" style="font-size: 30px" (click)="onClickViewOcr()" title="OCR ausblenden"></span>
+      <span *ngIf="!showOcrData" class="btn fa fa-file-text-o" style="font-size: 30px" (click)="onClickViewOcr()" title="OCR anzeigen"></span>
+    </div>
+  </div>
+  <div *ngIf="imageName" class="row m-auto justify-content-center">
+    <div class="col-auto"><h6>{{imageName}}</h6></div>
+  </div>
+  <div class="row m-auto justify-content-center" style="flex-wrap: nowrap">
+    <div *ngIf="showCarousel" class="col-auto ms-0 me-0">
+      <span class="prev-image pull-right" style="margin: 0">
+        <button class="btn btn-default icon-big" (click)="prevImage.emit(); clearSearchOnChangeImage()"
+                [disabled]="this.disableLeftArrow">
+          <span class="fa fa-chevron-left"></span>
+        </button>
+      </span>
+    </div>
+    <div class="col-auto">
+      <div class="image-view" [style.width.px]=imageWidth [style.height.px]= imageHeight>
+        <div class="tool">
+          <button class="btn btn-sm btn-circular-white m-2" (click)="rotateImage(90)" title="Rotieren">
+            <span class="fa material-icons icon-blue icon-medium" style="font-size:26px; vertical-align: middle">rotate_right</span>
+          </button>
+          <button class="btn btn-default btn-sm btn-circular-white" (click)="imageReset()" title="Zentrieren">
+            <span class="fa material-icons icon-blue icon-medium" style="font-size:26px; vertical-align: middle">center_focus_weak</span>
+          </button>
+          <div *ngIf="enableCategoryFunction" style="display: inline; float: right">
+            <ng-container [ngTemplateOutlet]="imageCategoryHandler"></ng-container>
+          </div>
+        </div>
+        <img id='img' #image [src]="this.src" alt="loading"
+             [ngStyle]="{'transform': 'translate(' + zoomX + 'px, ' + zoomY + 'px)' + 'scale(' + scale + ')' + 'rotate('+ rotation +'deg)'}">
+        <canvas id="canvasReference" #canvasReference
+                [ngStyle]="{'transform': 'translate(' + zoomX + 'px, ' + zoomY + 'px)' + 'scale(' + scale + ')'}">
+        </canvas>
+        <canvas id="canvasOverlay" #canvasOverlay (mousemove)="moveImage($event)" (mousedown)="mouseDown($event)"
+                (mouseover)="onMouseOver($event)"
+                [ngStyle]="{'transform': 'translate(' + zoomX + 'px, ' + zoomY + 'px)' + 'scale(' + scale + ')' + 'rotate('+ rotation +'deg)'}">
+        </canvas>
+        <button id="popButton" #popButton class="btn btn-primary"
+                style="position: absolute; background-color: rgba(0,0,0,0); border-color: blueviolet; min-width: 2px; min-height: 2px" type="button"
+                [popover]="popLocationTemplate"
+                placement="top" triggers="mouseenter:mouseleave"
+                [style.top.px]="foundTermPosInfo.y"
+                [style.left.px]="foundTermPosInfo.x" [style.width.px]="foundTermPosInfo.w" [style.height.px]="foundTermPosInfo.h"></button>
+      </div>
+    </div>
+    <div *ngIf="showCarousel" class="col-auto ms-0 me-0">
+      <span class="next-image">
+        <button class="btn btn-default icon-big" (click)="nextImage.emit(); clearSearchOnChangeImage()"
+                [disabled]="this.disableRightArrow">
+          <span class="fa fa-chevron-right"></span>
+        </button>
+      </span>
+    </div>
+    <div class="col-auto">
+      <div *ngIf="showOcrData">
+        <div class="text-view" [style.width.px]=imageWidth [style.height.px]=imageHeight>
+          <div [appOcrTextHighlight]="this.selectedWord | replaceWhite: '<->|&'" [ocrText]="this.ocrDataSet?.text"
+               style="white-space: pre-wrap;">
+            <p>{{ocrDataSet?.text}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #popLocationTemplate>
+  <div>
+    <span>error: {{this.searchInfo.score}}%</span>
+  </div>
+  <div>
+    <span>{{this.searchInfo.term}} - {{this.searchInfo.text}}</span>
+  </div>
+</ng-template>
+
+<ng-template #imageCategoryHandler>
+  <div *ngIf="this.isImageInCategory; then thenBlock else elseBlock"></div>
+  <ng-template #thenBlock>
+    <button (click)="this.removeImageFromCategory.emit(this.imageId)" [disabled]="!this.enableCategoryFunction"
+       class="btn btn-sm btn-default btn-circular-white m-2" title="Bild aus dieser Kategorie entfernen">
+      <span class="fa fa-minus icon-blue icon-medium" style="font-size:26px; vertical-align: middle"></span>
+    </button>
+  </ng-template>
+  <ng-template #elseBlock>
+    <button (click)="this.addImageToCategory.emit(this.imageId)" [disabled]="!this.enableCategoryFunction"
+       class="btn btn-sm btn-default btn-circular-white m-2" title="Bild zu dieser Kategorie hinzufügen">
+      <span class="fa fa-plus icon-blue" style="font-size:26px; vertical-align: middle"></span>
+    </button>
+  </ng-template>
+</ng-template>

@@ -1,0 +1,46 @@
+<div class="container-fluid">
+  <div class="row justify-content-md-center">
+    <div class="col-md-auto mt-5">
+      <button class="btn btn-primary" (click)="this.openReclassifyModal(reclassifyTemplate)"
+              [disabled]="this.isClassifying">
+        Klassifizieren <span class="fa fa-retweet"></span>
+      </button>
+    </div>
+  </div>
+  <div class="row justify-content-md-center">
+    <div class="col-6 mt-5">
+      <span>Progress: {{this.reClassifyTotal}} Dokumente umklassifizieren</span>
+      <app-progress-event (progressEvent)=this.onProgressEventLoad($event) (complete)="this.onCompleteReclassify()"></app-progress-event>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #reclassifyTemplate let-c="close" let-d="dismiss" class="modal fade">
+  <div class="modal-header">
+    <h4 class="modal-title">Klassifizierung wiederholen</h4>
+  </div>
+  <div class="modal-body">
+    <div>
+      Möchten Sie wirklich neu klassifizieren?
+      <br><br>
+      <select class="form-select" id="reclassifySearchCategory"
+              [(ngModel)]="this.selectedSearchCategoryReclassify">
+        <option [ngValue]="null">Alle</option>
+        <option [ngValue]="sc" *ngFor="let sc of this.searchCategoriesWithoutDefault$ | async">
+          <div>{{sc.name}}</div>
+        </option>
+      </select>
+      <br>
+      <div *ngIf="!selectedSearchCategoryReclassify">Alle offenen digitalisate neu klassifizieren.</div>
+      <div *ngIf="selectedSearchCategoryReclassify"> Reklassifizieren Sie alle offenen Digitalisate für Kategorie
+        {{selectedSearchCategoryReclassify?.name}}.</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" [disabled]="this.isClassifying"
+            (click)="reclassify(progressEvent)">bestätigen</button>
+    <button type="button" class="btn btn-outline-dark" [disabled]="this.isClassifying"
+            (click)="closeReclassifyModal()">Abbrechen</button>
+  </div>
+</ng-template>

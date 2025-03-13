@@ -1,0 +1,62 @@
+<div>
+  <h6 [innerHTML]=this.title></h6>
+  <br>
+  <div *ngIf="!this.editing">
+    <p appParseInnerHtmlText class="text-body" [innerHTML]="this.comment"></p>
+    <div class="row">
+      <div class="btn-group col-auto ms-auto">
+        <span *ngIf="this.canReply">
+          <button class="btn btn-default" (click)="this.replying = true" title="Kommentar ergänzen"
+                  [disabled]="!this.canReply">
+            <span class="fa fa-comment"></span>
+          </button>
+        </span>
+        <span *ngIf="this.isOwner">
+          <button class="btn btn-no-border" style="border:0 solid transparent !important" title="Bearbeiten" (click)="this.onEditComment()"
+                  [disabled]="!this.editable">
+            <span class="fa fa-pencil"></span>
+          </button>
+          <button class="btn btn-no-border" title="löschen"
+                  (click)="this.onDelete()">
+            <span class="fa fa-trash"></span>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="this.editing">
+    <div class="input-group">
+        <textarea class="form-control"
+                  [(ngModel)]="this.comment" aria-label="With textarea"
+                  rows="10">{{this.comment}}
+        </textarea>
+    </div>
+    <div class="input-group">
+      <div class="d-grid gap-2 d-md-block ms-auto mt-1">
+        <button class="btn btn-success btn-sm me-1" title="Save comment" (click)="onClickSaveCommentEdit()">
+          <span class="fa fa-check"></span>
+        </button>
+        <button class="btn btn-danger btn-sm" title="abbrechen" (click)="this.onCommentEditCancel()">
+          <span class="fa fa-close"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="this.replying">
+    <div class="input-group">
+                <textarea class="form-control"
+                          [(ngModel)]="this.commentReply" aria-label="With textarea" rows="3">{{this.commentReply}}
+                </textarea>
+    </div>
+    <div class="input-group">
+      <div class="d-grid gap-2 d-md-block ms-auto mt-1">
+        <button class="btn btn-success btn-sm me-1" title="Save reply" (click)="onClickSaveCommentReply()">
+          <span class="fa fa-check"></span>
+        </button>
+        <button class="btn btn-danger btn-sm" title="abbrechen" (click)="this.onReplyCancel()">
+          <span class="fa fa-close"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

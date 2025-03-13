@@ -1,0 +1,34 @@
+<div class="container">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Wert</th>
+        <th style="width:30%">Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let param of applicationParams">
+        <td>{{param.label}}</td>
+        <td>{{param.value}}</td>
+        <td>
+          <div *ngIf="(param.id == 'appUrl') && param.value == currentAppUrl"
+            class="fa fa-check-square" title="Rechte URL">
+          </div>
+          <div *ngIf="(param.id == 'appUrl') && param.value != currentAppUrl"
+            class="fa fa-exclamation-triangle error" title="Falsche URL. Bitte ändern.">
+          </div>
+        </td>
+        <td>
+          <div class="pull-right">
+            <a routerLink="editApplicationParam/{{param.id}}" class="btn btn-default"
+              *ngIf="hasRight('RIGHT_APP_SETTINGS')" title="bearbeiten">
+              <span class="fa fa-pencil"></span>
+            </a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

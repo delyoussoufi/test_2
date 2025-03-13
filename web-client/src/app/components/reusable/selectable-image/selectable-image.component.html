@@ -1,0 +1,11 @@
+<div  class="img-container">
+  <canvas #canvas width="200" height="325" (click)="onSelectClick()"
+          style="position: absolute; background-color: rgba(255,252,85, 0); z-index: 1000"></canvas>
+  <div class="img-title {{this.highlightTitle}}">{{this.title}}</div>
+  <div class="img-body">
+    <img [src]="this.src" alt="loading" style="height: 100%; width: 100%; object-fit: fill">
+  </div>
+  <div class="img-note">
+    <div class="text">{{this.name}}</div>
+  </div>
+</div>

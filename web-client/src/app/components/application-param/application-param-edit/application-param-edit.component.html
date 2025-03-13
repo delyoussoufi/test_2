@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="page-header">
+    <h3>Anwendungsparameter bearbeiten</h3>
+  </div>
+
+  <form class="form-horizontal" (keydown.enter)="this.updateApplicationParam()">
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="id">Id</label>
+      <div class="col-sm-10 mb-2">
+        <input type="text" id="id" class="form-control" name="id" [(ngModel)]="param.id" placeholder="Id"
+            required="true" disabled>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2 mb-1" for="label">Name</label>
+      <div class="col-sm-10 mb-2">
+          <input id="label" type="text" class="form-control" name="label" [(ngModel)]="param.label" placeholder="Name" required="true">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1 mb-1" for="value"
+        [popover]="tipMessage"
+        placement="right"
+        triggers="mouseenter:mouseleave"> Wert
+      </label>
+      <div class="col-sm-10  mb-2">
+        <div [ngSwitch]="param.id">
+          <!--Default-->
+          <input *ngSwitchDefault type="text" id="value"
+            class="form-control" name="value" [(ngModel)]="param.value" placeholder="Wert" required="true">
+          <!--scopeDb-->
+          <select *ngSwitchCase="'scopeDb'" class="custom-select" name="value" [(ngModel)]="param.value">
+            <option value="Yes">Ja</option>
+            <option value="No">Nein</option>
+          </select>
+          <!--AppUrl-->
+          <select *ngSwitchCase="'appUrl'" class="custom-select" name="value" [(ngModel)]="param.value">
+            <option [value]="currentAppUrl">{{currentAppUrl}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-12 col-sm-offset-6">
+        <button type="button" class="btn" routerLink="/admin/applicationParams">Zurück</button>
+        <button type="button" class="btn btn-primary" (click)="updateApplicationParam()">Speichern</button>
+      </div>
+    </div>
+  </form>
+</div>
