@@ -22,7 +22,7 @@ numpy~=1.26.4
 dataline~=0.1
 Pillow~=11.1.0
 tzlocal~=5.3
-spacy~=3.8.3
+spacy~=3.8.4
 
 # de-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/de_core_news_lg-3.5.0/de_core_news_lg-3.5.0-py3-none-any.whl
 
