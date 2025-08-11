@@ -23,7 +23,7 @@
     "@types/chart.js": "^2.9.41",
     "bootstrap": "^5.3.3",
     "chart.js": "~4.4.8",
-    "core-js": "^3.41.0",
+    "core-js": "^3.45.0",
     "font-awesome": "^4.7.0",
     "ng2-charts": "~8.0.0",
     "ngx-bootstrap": "~19.0.2",
